@@ -200,6 +200,19 @@ async function loadMain() {
             window.open(pdfPath, '_blank'); // Open the PDF in a new tab
           });
         }
+        if (feature.properties && feature.properties.name) {
+          const bounds = layer.getBounds();
+          const topCenter = [bounds.getNorth(), (bounds.getWest() + bounds.getEast()) / 2];
+          const tooltip = L.tooltip({
+            permanent: true,
+            direction: 'center',
+            className: 'polygon-label',
+            offset: [0, -30]
+          })
+          .setLatLng(topCenter)
+          .setContent(`<span style="color: #FF4500; border: 1px solid #FF4500; padding: 2px 4px; border-radius: 3px; box-shadow: none;">${feature.properties.name}</span>`);
+          map.addLayer(tooltip);
+        }
       }
     }).addTo(map);
 
