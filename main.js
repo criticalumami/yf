@@ -192,7 +192,7 @@ async function loadMain() {
     console.log('det.geojson Data:', detData);
 
     const detLayer = L.geoJSON(detData, {
-      style: { color: '#FF4500', weight: 1, fillColor: '#FFA07A', fillOpacity: 0.1 }, // Customize the style
+      style: { color: '#FF4500', weight: 3, fillColor: '#FFA07A', fillOpacity: 0.05 }, // Customize the style
       onEachFeature: (feature, layer) => {
         if (feature.properties && feature.properties.url) {
           layer.on('click', () => {
