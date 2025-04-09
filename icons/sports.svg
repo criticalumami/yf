@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="11.2889mm" height="11.2889mm"
+ viewBox="0 0 32 32"
+ xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  version="1.2" baseProfile="tiny">
+<title>Qt SVG Document</title>
+<desc>Generated with Qt</desc>
+<defs>
+</defs>
+<g fill="none" stroke="black" stroke-width="1" fill-rule="evenodd" stroke-linecap="square" stroke-linejoin="bevel" >
+
+<g fill="#ffffff" fill-opacity="1" stroke="#000000" stroke-opacity="1" stroke-width="0.566929" stroke-linecap="square" stroke-linejoin="bevel" transform="matrix(1,0,0,1,0,0)"
+font-family=".AppleSystemUIFont" font-size="13" font-weight="400" font-style="normal" 
+>
+<path vector-effect="none" fill-rule="evenodd" d="M23.0866,16 C23.0866,19.9138 19.9138,23.0866 16,23.0866 C12.0862,23.0866 8.91339,19.9138 8.91339,16 C8.91339,12.0862 12.0862,8.91339 16,8.91339 C19.9138,8.91339 23.0866,12.0862 23.0866,16 "/>
+</g>
+
+<g fill="#ffffff" fill-opacity="1" stroke="#000000" stroke-opacity="1" stroke-width="0.566929" stroke-linecap="square" stroke-linejoin="bevel" transform="matrix(1,0,0,1,16,16)"
+font-family=".AppleSystemUIFont" font-size="13" font-weight="400" font-style="normal" 
+>
+</g>
+
+<g fill="#000000" fill-opacity="1" stroke="none" transform="matrix(0.0203639,0,0,0.0203639,10.0945,10.0945)"
+font-family=".AppleSystemUIFont" font-size="13" font-weight="400" font-style="normal" 
+>
+<circle cx="201.591" cy="427.93" r="50.546"/>
+</g>
+
+<g fill="#000000" fill-opacity="1" stroke="none" transform="matrix(0.0203639,0,0,0.0203639,10.0945,10.0945)"
+font-family=".AppleSystemUIFont" font-size="13" font-weight="400" font-style="normal" 
+>
+<path vector-effect="none" fill-rule="nonzero" d="M506.386,446.305 L415.876,355.796 C412.149,352.068 406.953,350.725 402.154,351.738 C379.445,321.183 366.469,289.551 360.132,270.977 C377.794,226.069 356.856,175.859 315.113,134.116 C261.611,80.615 187.245,69.652 141.872,113.61 C92.435,161.506 108.876,233.349 162.378,286.852 C204.279,328.752 254.279,350.123 299.467,331.949 C318.072,338.315 349.572,351.276 379.999,373.891 C378.983,378.69 380.33,383.887 384.057,387.615 L474.568,478.125 C480.424,483.983 489.922,483.983 495.781,478.126 L506.386,467.52 C512.243,461.661 512.243,452.164 506.386,446.305 M318.65,319.311 C323.757,315.078 328.806,310.499 333.782,305.524 C338.758,300.549 343.332,295.492 347.557,290.366 C354.433,307.024 363.139,325.872 373.998,345.74 C354.142,334.885 335.302,326.182 318.65,319.311 "/>
+</g>
+
+<g fill="#ffffff" fill-opacity="1" stroke="#000000" stroke-opacity="1" stroke-width="0.566929" stroke-linecap="square" stroke-linejoin="bevel" transform="matrix(1,0,0,1,16,16)"
+font-family=".AppleSystemUIFont" font-size="13" font-weight="400" font-style="normal" 
+>
+</g>
+
+<g fill="#ffffff" fill-opacity="1" stroke="#000000" stroke-opacity="1" stroke-width="0.566929" stroke-linecap="square" stroke-linejoin="bevel" transform="matrix(1,0,0,1,0,0)"
+font-family=".AppleSystemUIFont" font-size="13" font-weight="400" font-style="normal" 
+>
+</g>
+</g>
+</svg>

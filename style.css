@@ -1,0 +1,136 @@
+html, body, #map {
+    height: 100%;
+    margin: 0;
+    background-color: #FFFFFF;
+  }
+  
+  body {
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .leaflet-popup-content {
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  
+  .leaflet-control-layers {
+    height: auto !important;
+  }
+  
+  .leaflet-control-layers-expanded {
+    height: auto !important;
+  }
+  
+  .leaflet-control-layers-list {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  
+  .map-title {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 10px 16px;
+    font-size: 16px;
+    font-weight: 700;
+    z-index: 1000;
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  }
+  
+  .legend {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 400;
+    color: #000;
+    z-index: 1000;
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    line-height: 1.6;
+    max-width: 300px;
+    transition: all 0.3s ease;
+    max-height: 600px;
+    overflow: hidden;
+  }
+  
+  .legend-header {
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 8px;
+  }
+  
+  .legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+    padding-left: 10px;
+  }
+  
+  .legend-color {
+    width: 14px;
+    height: 14px;
+    border: 1px solid #000;
+    margin-right: 8px;
+  }
+  
+  .legend-color.yf { background-color: #FFFFFF; border-color: #000000; }
+  .legend-color.maj_b { background-color: #D3D3D3; border-color: #000000; }
+  .legend-color.parks { background-color: #90EE90; border-color: #006400; }
+  .legend-color.sima { background-color: transparent; border-color: #00bfff; }
+  .legend-color.survey { background-color: #D3D3D3; border-color: #000000; }
+  
+  .legend-line.survey {
+    width: 20px;
+    height: 2px;
+    background-color: #000000;
+    margin-right: 8px;
+  }
+  
+  .legend-icon.culture {
+    width: 20px;
+    height: 20px;
+    background: url('icons/culture.svg') no-repeat center center;
+  }
+  
+  .legend-icon.sports {
+    width: 20px;
+    height: 20px;
+    background: url('icons/sports.svg') no-repeat center center;
+  }
+  
+  .legend-icon.node {
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border: 2px solid black;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  
+  .legend-color.photo {
+    width: 14px;
+    height: 14px;
+    background-image: url('icons/photo.svg');
+    background-size: cover;
+    border: 1px solid #000;
+    margin-right: 8px;
+  }
+  
+  .north-arrow {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 5px;
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  }
+
+  .yf-mask {
+    fill: white;
+    fill-opacity: 0.6;
+    stroke: none;
+    opacity: 0.8;
+    pointer-events: none; /* optional: prevents interaction with the mask */
+  }

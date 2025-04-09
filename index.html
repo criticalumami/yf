@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Yerevan Flyover - S01</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="map-title">Yerevan Flyover - S01</div>
+  <div class="legend" id="legend">
+    <div class="legend-header" onclick="toggleLegend()">+ Legend</div>
+    <div class="legend-items">
+      <div class="legend-item"><div class="legend-color yf"></div> &nbsp;&nbsp;YF Boundary</div>
+      <div class="legend-item"><div class="legend-color maj_b"></div> &nbsp;&nbsp;Major Buildings</div>
+      <div class="legend-item"><div class="legend-color parks"></div> &nbsp;&nbsp;Parks</div>
+      <div class="legend-item"><div class="legend-icon culture"></div> &nbsp;&nbsp;Culture</div>
+      <div class="legend-item"><div class="legend-icon sports"></div> &nbsp;&nbsp;Sports</div>
+      <div class="legend-item"><div class="legend-color sima"></div> &nbsp;&nbsp;SIMA Projects</div>
+      <div class="legend-item"><div class="legend-line survey"></div> &nbsp;&nbsp;Topographical Survey</div>
+      <div class="legend-item"><div class="legend-icon node"></div> &nbsp;&nbsp;YF - Nodes</div>
+      <div class="legend-item"><div class="legend-color photo"></div> &nbsp;&nbsp;Photos</div>
+    </div>
+  </div>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@turf/turf"></script>
+  <script src="main.js" defer></script>
+</body>
+</html>
