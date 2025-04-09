@@ -83,6 +83,13 @@ html, body, #map {
   .legend-color.parks { background-color: #90EE90; border-color: #006400; }
   .legend-color.sima { background-color: transparent; border-color: #00bfff; }
   .legend-color.survey { background-color: #D3D3D3; border-color: #000000; }
+  .legend-color.det {
+    width: 14px;
+    height: 14px;
+    background-color: #FF4500; /* Match the color of the det.geojson layer */
+    border: 1px solid #000; /* Optional: Add a border for better visibility */
+    margin-right: 8px;
+  }
   
   .legend-line.survey {
     width: 20px;
