@@ -15,11 +15,11 @@ const satelliteBasemap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/res
 const overlayLayers = {};
 
 // Icons
-const nodeIcon = L.divIcon({
-  className: 'node-icon',
-  html: '<div style="width: 20px; height: 20px; background-color: white; border: 2px solid black; border-radius: 50%;"></div>',
-  iconSize: [20, 20],
-  iconAnchor: [10, 10]
+const nodeIcon = L.icon({
+  iconUrl: 'icons/loz.svg', // Path to the loz.svg file
+  iconSize: [20, 20], // Adjust the size of the icon
+  iconAnchor: [10, 10], // Anchor the icon at its center
+  popupAnchor: [0, -10] // Position the popup above the icon
 });
 
 const sportsIcon = L.icon({
