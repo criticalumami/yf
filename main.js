@@ -97,7 +97,7 @@ async function loadMain() {
         key: 'Major Buildings',
         file: 'maj_b.geojson',
         filter: f => isGeometryInsideYF(f, yfPolygon),
-        style: { color: '#000', weight: 0.5, fillColor: '#D3D3D3', fillOpacity: 0.7 }
+        style: { color: '#000', weight: 0.5, fillColor: '#3f3f3f', fillOpacity: 0.9 }
       },
       {
         key: 'Parks',
@@ -215,8 +215,6 @@ async function loadMain() {
         }
       }
     }).addTo(map);
-
-    console.log('det.geojson Layer:', detLayer);
 
     // Add to overlay layers for toggling
     overlayLayers["Detailed Features"] = detLayer;
