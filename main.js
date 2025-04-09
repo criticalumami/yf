@@ -169,7 +169,6 @@ async function loadMain() {
       .filter(f => isGeometryInsideYF(f, yfPolygon)) // Apply filtering for inside YF polygon
       .forEach(feature => {
         const coords = turf.centroid(feature).geometry.coordinates;
-        console.log('Sports Feature:', feature.properties.Name, 'Coordinates:', coords); // Log feature details
         const marker = L.marker([coords[1], coords[0]], { icon: sportsIcon }).addTo(sportsLayer);
         marker.bindPopup(feature.properties.Name || "Unnamed");
       });
@@ -187,6 +186,27 @@ async function loadMain() {
 
     const yfMask = createMaskFromPolygon(yfData);
     map.addLayer(yfMask);
+
+    // Add det.geojson on top of everything else
+    const detData = await loadGeoJSON('det.geojson');
+    console.log('det.geojson Data:', detData);
+
+    const detLayer = L.geoJSON(detData, {
+      style: { color: '#FF4500', weight: 1, fillColor: '#FFA07A', fillOpacity: 0.1 }, // Customize the style
+      onEachFeature: (feature, layer) => {
+        if (feature.properties && feature.properties.url) {
+          layer.on('click', () => {
+            const pdfPath = `${feature.properties.url}`; // Prepend the pdf folder path
+            window.open(pdfPath, '_blank'); // Open the PDF in a new tab
+          });
+        }
+      }
+    }).addTo(map);
+
+    console.log('det.geojson Layer:', detLayer);
+
+    // Add to overlay layers for toggling
+    overlayLayers["Detailed Features"] = detLayer;
 
     // Update control layers with all overlay layers and toggle the basemap
     L.control.layers({
