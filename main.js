@@ -210,7 +210,7 @@ async function loadMain() {
             offset: [0, -30]
           })
           .setLatLng(topCenter)
-          .setContent(`<span style="color: #FF4500; border: 1px solid #FF4500; padding: 2px 4px; border-radius: 3px; box-shadow: none;">${feature.properties.name}</span>`);
+          .setContent(`<span style="color: #FF4500; background-color: #FFFFFF; border: 1px solid #FF4500; padding: 2px 6px; border-radius: 6px; box-shadow: none;">${feature.properties.name}</span>`);
           map.addLayer(tooltip);
         }
       }
@@ -228,9 +228,12 @@ async function loadMain() {
       "White Background": whiteBackground
     }, overlayLayers, { position: 'bottomright' }).addTo(map);
 
-    setTimeout(() => {
-        document.querySelector('.leaflet-control-layers').classList.add('leaflet-control-layers-expanded');
-      }, 100);
+    const legendItems = document.querySelector('.legend-items');
+    const legendHeader = document.querySelector('.legend-header');
+    if (legendItems && legendHeader) {
+      legendItems.style.display = 'none';
+      legendHeader.innerHTML = '+ Legend';
+    }
 
   } catch (err) {
     console.error('Map loading failed:', err);
