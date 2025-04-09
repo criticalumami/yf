@@ -159,6 +159,7 @@ async function loadMain() {
       const marker = L.marker([coords[1], coords[0]], { icon: photoIcon }).addTo(phoLayer);
       marker.bindPopup(`<div style="text-align: center;"><img src="${photoUri}" style="width: 300px; height: auto; margin-bottom: 8px;"><br><strong>${photoUri}</strong></div>`);
     });
+
     phoLayer.addTo(map);
     overlayLayers["Photos"] = phoLayer;
 
@@ -189,8 +190,7 @@ async function loadMain() {
 
     // Add det.geojson on top of everything else
     const detData = await loadGeoJSON('det.geojson');
-    console.log('det.geojson Data:', detData);
-
+    
     const detLayer = L.geoJSON(detData, {
       style: { color: '#FF4500', weight: 3, fillColor: '#FFA07A', fillOpacity: 0.05 }, // Customize the style
       onEachFeature: (feature, layer) => {
@@ -210,7 +210,7 @@ async function loadMain() {
             offset: [0, -30]
           })
           .setLatLng(topCenter)
-          .setContent(`<span style="color: #FF4500; background-color: #FFFFFF; border: 1px solid #FF4500; padding: 2px 6px; border-radius: 6px; box-shadow: none;">${feature.properties.name}</span>`);
+          .setContent(`<span style="color: #FF4500; background-color: #FFFFFF">${feature.properties.name}</span>`);
           map.addLayer(tooltip);
         }
       }
