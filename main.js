@@ -64,13 +64,8 @@ function createMaskFromPolygon(yfGeoJSON) {
         className: 'yf-mask',
         interactive: false
       });
-  }
-
-
-// Check if any part of the geometry is inside YF polygon
-function isGeometryInsideYF(feature, yfPolygon) {
-  return turf.booleanIntersects(turf.feature(feature.geometry), yfPolygon);
 }
+
 
 // Load and display layers
 async function loadMain() {
@@ -90,31 +85,26 @@ async function loadMain() {
       {
         key: 'Buildings',
         file: 'bhbldg.geojson',
-        filter: f => isGeometryInsideYF(f, yfPolygon),
         style: { color: '#A9A9A9', weight: 1, fillColor: '#D3D3D3', fillOpacity: 0.5 }
       },
       {
         key: 'Major Buildings',
         file: 'maj_b.geojson',
-        filter: f => isGeometryInsideYF(f, yfPolygon),
         style: { color: '#000', weight: 0.5, fillColor: '#3f3f3f', fillOpacity: 0.9 }
       },
       {
         key: 'Parks',
         file: 'parks.geojson',
-        filter: f => isGeometryInsideYF(f, yfPolygon),
         style: { color: '#006400', weight: 1, fillColor: '#90EE90', fillOpacity: 0.5 }
       },
       {
         key: 'SIMA Projects',
         file: 'sima.geojson',
-        filter: f => isGeometryInsideYF(f, yfPolygon),
         style: { color: '#00bfff', weight: 2, fillColor: '#FFFFFF', fillOpacity: 0 }
       },
       {
         key: 'Survey',
         file: 'surv.geojson',
-        filter: f => isGeometryInsideYF(f, yfPolygon),
         style: { color: '#000000', weight: 0.25 }
       }
     ];
@@ -122,7 +112,7 @@ async function loadMain() {
     // Load and add layers to the map
     for (let def of layerDefs) {
       const data = await loadGeoJSON(def.file);
-      const features = def.filter ? data.features.filter(def.filter) : data.features;
+      const features = data.features;
       const layer = L.geoJSON({ type: 'FeatureCollection', features }, { style: def.style }).addTo(map);
       overlayLayers[def.key] = layer;
     }
@@ -130,13 +120,11 @@ async function loadMain() {
     // Add nodes layer
     const nodesData = await loadGeoJSON('nodes.geojson');
     const nodesLayer = L.layerGroup();
-    nodesData.features
-      .filter(f => isGeometryInsideYF(f, yfPolygon))
-      .forEach(feature => {
-        const coords = turf.centroid(feature).geometry.coordinates;
-        const marker = L.marker([coords[1], coords[0]], { icon: nodeIcon }).addTo(nodesLayer);
-        marker.bindPopup(feature.properties.Name || "Unnamed");
-      });
+    nodesData.features.forEach(feature => {
+      const coords = turf.centroid(feature).geometry.coordinates;
+      const marker = L.marker([coords[1], coords[0]], { icon: nodeIcon }).addTo(nodesLayer);
+      marker.bindPopup(feature.properties.Name || "Unnamed");
+    });
     nodesLayer.addTo(map);
     overlayLayers["Nodes"] = nodesLayer;
 
@@ -166,13 +154,11 @@ async function loadMain() {
     // Add sports layer
     const cultSpoData = await loadGeoJSON('cult_spo.geojson');
     const sportsLayer = L.layerGroup();
-    cultSpoData.features
-      .filter(f => isGeometryInsideYF(f, yfPolygon)) // Apply filtering for inside YF polygon
-      .forEach(feature => {
-        const coords = turf.centroid(feature).geometry.coordinates;
-        const marker = L.marker([coords[1], coords[0]], { icon: sportsIcon }).addTo(sportsLayer);
-        marker.bindPopup(feature.properties.Name || "Unnamed");
-      });
+    cultSpoData.features.forEach(feature => {
+      const coords = turf.centroid(feature).geometry.coordinates;
+      const marker = L.marker([coords[1], coords[0]], { icon: sportsIcon }).addTo(sportsLayer);
+      marker.bindPopup(feature.properties.Name || "Unnamed");
+    });
 
     sportsLayer.addTo(map);
     overlayLayers["Sports"] = sportsLayer;
