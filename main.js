@@ -72,7 +72,7 @@ async function loadMain() {
   try {
     // Load YF boundary and create the layer
     const yfData = await loadGeoJSON('YF.geojson');
-    const yfPolygon = turf.feature(yfData.features[0].geometry);
+    window.yfPolygon = turf.feature(yfData.features[0].geometry);
 
     const yfLayer = L.geoJSON(yfData, {
       style: { color: '#000', weight: 2, fillColor: '#FFF', fillOpacity: 0.2 }
@@ -112,7 +112,7 @@ async function loadMain() {
     // Load and add layers to the map
     for (let def of layerDefs) {
       const data = await loadGeoJSON(def.file);
-      const features = data.features;
+      const features = data.features.filter(f => turf.booleanIntersects(turf.feature(f.geometry), window.yfPolygon));
       const layer = L.geoJSON({ type: 'FeatureCollection', features }, { style: def.style }).addTo(map);
       overlayLayers[def.key] = layer;
     }
@@ -154,7 +154,7 @@ async function loadMain() {
     // Add sports layer
     const cultSpoData = await loadGeoJSON('cult_spo.geojson');
     const sportsLayer = L.layerGroup();
-    cultSpoData.features.forEach(feature => {
+    cultSpoData.features.filter(feature => turf.booleanIntersects(turf.feature(feature.geometry), window.yfPolygon)).forEach(feature => {
       const coords = turf.centroid(feature).geometry.coordinates;
       const marker = L.marker([coords[1], coords[0]], { icon: sportsIcon }).addTo(sportsLayer);
       marker.bindPopup(feature.properties.Name || "Unnamed");
