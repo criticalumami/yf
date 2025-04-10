@@ -11,11 +11,17 @@ const satelliteBasemap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/res
   maxZoom: 19
 });
 
+// Define the OSM basemap
+const osmBasemap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  maxZoom: 19
+});
+
 const overlayLayers = {};
 
 // Layer styles
 const layerStyles = {
-  yfBoundary: { color: '#000', weight: 2, fillColor: '#FFF', fillOpacity: 0.2 },
+  yfBoundary: { color: '#000', weight: 2, fillColor: '#FFF', fillOpacity: 0.0  },
   buildings: { color: '#A9A9A9', weight: 1, fillColor: '#D3D3D3', fillOpacity: 0.5 },
   majorBuildings: { color: '#000', weight: 0.5, fillColor: '#3f3f3f', fillOpacity: 0.9 },
   parks: { color: '#006400', weight: 1, fillColor: '#90EE90', fillOpacity: 0.5 },
@@ -27,7 +33,7 @@ const layerStyles = {
 // Icons
 const ICONS_PATH = 'icons/';
 const nodeIcon = L.icon({ iconUrl: `${ICONS_PATH}loz.svg`, iconSize: [20, 20], iconAnchor: [10, 10], popupAnchor: [0, -10] });
-const sportsIcon = L.icon({ iconUrl: `${ICONS_PATH}sports.svg`, iconSize: [20, 20], iconAnchor: [10, 10] });
+const sportsIcon = L.icon({ iconUrl: `${ICONS_PATH}sports.svg`, iconSize: [20, 20], iconAnchor: [10, 10], popupAnchor: [0, -10] });
 
 // Add control layers and scale to map
 L.control.scale({ position: 'bottomright', imperial: false, metric: true }).addTo(map);
@@ -191,7 +197,9 @@ async function loadMain() {
     const yfMask = createMaskFromPolygon(yfData);
     map.addLayer(yfMask);
 
+    // Add layer control with basemaps and boundaries
     L.control.layers({
+      "OSM": osmBasemap,
       "Basemap": basemap,
       "Satellite": satelliteBasemap,
       "White Background": whiteBackground
