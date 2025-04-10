@@ -72,7 +72,7 @@ function createMaskFromPolygon(yfGeoJSON) {
     geometry: { type: "Polygon", coordinates: maskCoords }
   }, {
     className: 'yf-mask',
-    interactive: false
+    interactive: false // Ensure the mask does not block interactions
   });
 }
 
@@ -157,12 +157,15 @@ async function loadDetailedFeaturesLayer() {
   const detLayer = L.geoJSON(detData, {
     style: layerStyles.detLayer,
     onEachFeature: (feature, layer) => {
+      // Add click event to open a PDF if the feature has a URL property
       if (feature.properties && feature.properties.url) {
         layer.on('click', () => {
           const pdfPath = `pdf/${feature.properties.url}`;
           window.open(pdfPath, '_blank');
         });
       }
+
+      // Add a tooltip if the feature has a name property
       if (feature.properties && feature.properties.name) {
         const bounds = layer.getBounds();
         const topCenter = [bounds.getNorth(), (bounds.getWest() + bounds.getEast()) / 2];
@@ -172,13 +175,15 @@ async function loadDetailedFeaturesLayer() {
           className: 'polygon-label',
           offset: [0, -30]
         })
-        .setLatLng(topCenter)
-        .setContent(`<span style="color: #FF4500; background-color: #FFFFFF">${feature.properties.name}</span>`);
+          .setLatLng(topCenter)
+          .setContent(`<span style="color: #FF4500; background-color: #FFFFFF">${feature.properties.name}</span>`);
         map.addLayer(tooltip);
       }
     }
-  }).addTo(map);
+  });
 
+  // Add the det layer to the map last to ensure it is on top
+  detLayer.addTo(map);
   overlayLayers["Detailed Features"] = detLayer;
 }
 
@@ -190,12 +195,13 @@ async function loadMain() {
     await loadNodesLayer();
     await loadPhotosLayer();
     await loadSportsLayer();
-    await loadDetailedFeaturesLayer();
 
     const whiteBackground = L.tileLayer('', { noWrap: true, minZoom: 0, maxZoom: 19, attribution: '' });
     const yfData = await loadGeoJSON('YF.geojson');
     const yfMask = createMaskFromPolygon(yfData);
-    map.addLayer(yfMask);
+    map.addLayer(yfMask); // Add the mask before other layers
+
+    await loadDetailedFeaturesLayer(); // Add the det layer last to ensure it is on top
 
     // Add layer control with basemaps and boundaries
     L.control.layers({
