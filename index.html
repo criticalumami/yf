@@ -2,32 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-  <!-- Open Graph meta tags for social sharing -->
-  <meta property="og:title" content="SIMA - Street Network" />
-  <meta property="og:description" content="SIMA - Interactive Map" />
-  <meta property="og:url" content="https://sima-sn.netlify.app/" /> 
-  <meta property="og:site_name" content="SIMA - Street Network" />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://sima-sn.netlify.app/thumb.png" />
-
-  <!-- Optional: Twitter card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Explore the SIMA-SN Interactive Map">
-  <meta name="twitter:description" content="YF interactive map">
-  <meta name="twitter:image" content="https://sima-sn.netlify.app/thumb.png">
-  <meta name="twitter:site" content="@sima_yf">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>SIMA - Street Network</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
-  
+  <link rel="icon" href="icons/favicon.svg" type="image/svg+xml" />
 </head>
 <body>
-  <div class="map-title" id="mapTitle" onclick="toggleDescription()">SIMA-SN</div>
+  <div class="map-title" id="mapTitle" onclick="toggleLegend()">SIMA-SN</div>
   <div class="legend" id="legend">
     <div class="legend-header" onclick="toggleLegend()">+ Legend</div>
     <div class="legend-items">
@@ -40,13 +24,10 @@
       <div class="legend-item"><div class="legend-line survey"></div> &nbsp;&nbsp;Topographical Survey</div>
       <div class="legend-item"><div class="legend-icon node"></div> &nbsp;&nbsp;YF - Nodes</div>
       <div class="legend-item"><div class="legend-color photo"></div> &nbsp;&nbsp;Photos</div>
-      <div class="legend-item">
-        <div class="legend-color det"></div> &nbsp;&nbsp;Detailed Features
-      </div>
+      <div class="legend-item"><div class="legend-color det"></div> &nbsp;&nbsp;Detailed Features</div>
     </div>
   </div>
   <div id="map"></div>
-
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@turf/turf"></script>
   <script src="main.js" defer></script>

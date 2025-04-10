@@ -6,12 +6,11 @@ const basemap = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z
   maxZoom: 19
 });
 
-// Satellite basemap (Esri World Imagery)
 const satelliteBasemap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    attribution: '&copy; <a href="https://www.esri.com/">Esri</a>',
-    maxZoom: 19
+  attribution: '&copy; <a href="https://www.esri.com/">Esri</a>',
+  maxZoom: 19
 });
-  
+
 const overlayLayers = {};
 
 // Layer styles
@@ -26,18 +25,9 @@ const layerStyles = {
 };
 
 // Icons
-const nodeIcon = L.icon({
-  iconUrl: 'icons/loz.svg', // Path to the loz.svg file
-  iconSize: [20, 20], // Adjust the size of the icon
-  iconAnchor: [10, 10], // Anchor the icon at its center
-  popupAnchor: [0, -10] // Position the popup above the icon
-});
-
-const sportsIcon = L.icon({
-  iconUrl: 'icons/sports.svg',
-  iconSize: [20, 20],
-  iconAnchor: [10, 10]
-});
+const ICONS_PATH = 'icons/';
+const nodeIcon = L.icon({ iconUrl: `${ICONS_PATH}loz.svg`, iconSize: [20, 20], iconAnchor: [10, 10], popupAnchor: [0, -10] });
+const sportsIcon = L.icon({ iconUrl: `${ICONS_PATH}sports.svg`, iconSize: [20, 20], iconAnchor: [10, 10] });
 
 // Add control layers and scale to map
 L.control.scale({ position: 'bottomright', imperial: false, metric: true }).addTo(map);
@@ -51,51 +41,47 @@ northArrow.onAdd = function () {
 };
 northArrow.addTo(map);
 
-// Load GeoJSON data function
+// Utility functions
 async function loadGeoJSON(path) {
-  const res = await fetch(`data/${path}`);
-  return res.json();
+  try {
+    const res = await fetch(`data/${path}`);
+    if (!res.ok) throw new Error(`Failed to load ${path}`);
+    return await res.json();
+  } catch (err) {
+    console.error(err);
+    return { type: 'FeatureCollection', features: [] };
+  }
 }
 
-// Helper function to filter features inside YF polygon
 function featuresInsideYF(features) {
   return features.filter(f => turf.booleanIntersects(turf.feature(f.geometry), window.yfPolygon));
 }
 
-// Create mask from YF polygon
 function createMaskFromPolygon(yfGeoJSON) {
-    const outer = [
-      [[-180, -90], [-180, 90], [180, 90], [180, -90], [-180, -90]]
-    ];
-    const maskCoords = outer.concat(yfGeoJSON.features[0].geometry.coordinates.map(ring => ring.map(c => [c[0], c[1]])));
-  
-    return L.geoJSON({
-        type: "Feature",
-        geometry: {
-          type: "Polygon",
-          coordinates: maskCoords
-        }
-      }, {
-        className: 'yf-mask',
-        interactive: false
-      });
+  const outer = [[[ -180, -90 ], [ -180, 90 ], [ 180, 90 ], [ 180, -90 ], [ -180, -90 ]]];
+  const maskCoords = outer.concat(yfGeoJSON.features[0].geometry.coordinates.map(ring => ring.map(c => [c[0], c[1]])));
+
+  return L.geoJSON({
+    type: "Feature",
+    geometry: { type: "Polygon", coordinates: maskCoords }
+  }, {
+    className: 'yf-mask',
+    interactive: false
+  });
 }
 
-// Load YF boundary layer
+// Layer loading functions
 async function loadYFBoundary() {
   const yfData = await loadGeoJSON('YF.geojson');
   window.yfPolygon = turf.feature(yfData.features[0].geometry);
 
-  const yfLayer = L.geoJSON(yfData, {
-    style: layerStyles.yfBoundary
-  }).addTo(map);
+  const yfLayer = L.geoJSON(yfData, { style: layerStyles.yfBoundary }).addTo(map);
   overlayLayers["YF Boundary"] = yfLayer;
   map.fitBounds(yfLayer.getBounds());
 }
 
-// Load general layers
 async function loadGeneralLayers() {
-  const layerDefs = [
+  const layersConfig = [
     { key: 'Buildings', file: 'bhbldg.geojson', style: layerStyles.buildings },
     { key: 'Major Buildings', file: 'maj_b.geojson', style: layerStyles.majorBuildings },
     { key: 'Parks', file: 'parks.geojson', style: layerStyles.parks },
@@ -103,15 +89,14 @@ async function loadGeneralLayers() {
     { key: 'Survey', file: 'surv.geojson', style: layerStyles.survey }
   ];
 
-  for (let def of layerDefs) {
-    const data = await loadGeoJSON(def.file);
+  for (const { key, file, style } of layersConfig) {
+    const data = await loadGeoJSON(file);
     const features = featuresInsideYF(data.features);
-    const layer = L.geoJSON({ type: 'FeatureCollection', features }, { style: def.style }).addTo(map);
-    overlayLayers[def.key] = layer;
+    const layer = L.geoJSON({ type: 'FeatureCollection', features }, { style }).addTo(map);
+    overlayLayers[key] = layer;
   }
 }
 
-// Load nodes layer
 async function loadNodesLayer() {
   const nodesData = await loadGeoJSON('nodes.geojson');
   const nodesLayer = L.layerGroup();
@@ -124,7 +109,6 @@ async function loadNodesLayer() {
   overlayLayers["Nodes"] = nodesLayer;
 }
 
-// Load photos layer
 async function loadPhotosLayer() {
   const phoData = await loadGeoJSON('pho.geojson');
   const phoLayer = L.layerGroup();
@@ -135,7 +119,7 @@ async function loadPhotosLayer() {
 
     const photoIcon = L.divIcon({
       className: 'photo-icon',
-      html: `<img src="icons/photo.svg" style="width: 24px; height: 24px; transform: rotate(${direction}deg);">`,
+      html: `<img src="${ICONS_PATH}photo.svg" style="width: 24px; height: 24px; transform: rotate(${direction}deg);">`,
       iconSize: [24, 24],
       iconAnchor: [12, 12],
       popupAnchor: [0, -12]
@@ -149,7 +133,6 @@ async function loadPhotosLayer() {
   overlayLayers["Photos"] = phoLayer;
 }
 
-// Load sports layer
 async function loadSportsLayer() {
   const cultSpoData = await loadGeoJSON('cult_spo.geojson');
   const sportsLayer = L.layerGroup();
@@ -163,17 +146,15 @@ async function loadSportsLayer() {
   overlayLayers["Sports"] = sportsLayer;
 }
 
-// Load detailed features layer
 async function loadDetailedFeaturesLayer() {
   const detData = await loadGeoJSON('det.geojson');
-  
   const detLayer = L.geoJSON(detData, {
     style: layerStyles.detLayer,
     onEachFeature: (feature, layer) => {
       if (feature.properties && feature.properties.url) {
         layer.on('click', () => {
-          const pdfPath = `${feature.properties.url}`; // Prepend the pdf folder path
-          window.open(pdfPath, '_blank'); // Open the PDF in a new tab
+          const pdfPath = `pdf/${feature.properties.url}`;
+          window.open(pdfPath, '_blank');
         });
       }
       if (feature.properties && feature.properties.name) {
@@ -192,11 +173,10 @@ async function loadDetailedFeaturesLayer() {
     }
   }).addTo(map);
 
-  // Add to overlay layers for toggling
   overlayLayers["Detailed Features"] = detLayer;
 }
 
-// Load and display layers
+// Main initialization
 async function loadMain() {
   try {
     await loadYFBoundary();
@@ -206,19 +186,11 @@ async function loadMain() {
     await loadSportsLayer();
     await loadDetailedFeaturesLayer();
 
-    // White background layer
-    const whiteBackground = L.tileLayer('', { 
-      noWrap: true, 
-      minZoom: 0, 
-      maxZoom: 19,
-      attribution: ''
-    });
-
+    const whiteBackground = L.tileLayer('', { noWrap: true, minZoom: 0, maxZoom: 19, attribution: '' });
     const yfData = await loadGeoJSON('YF.geojson');
     const yfMask = createMaskFromPolygon(yfData);
     map.addLayer(yfMask);
 
-    // Update control layers with all overlay layers and toggle the basemap
     L.control.layers({
       "Basemap": basemap,
       "Satellite": satelliteBasemap,
@@ -230,9 +202,7 @@ async function loadMain() {
     if (legendItems && legendHeader) {
       legendItems.style.display = 'none';
       legendHeader.innerHTML = '+ Legend';
-    
     }
-
   } catch (err) {
     console.error('Map loading failed:', err);
   }
@@ -240,31 +210,15 @@ async function loadMain() {
 
 loadMain();
 
-// Toggle function for the legend
+// Toggle legend visibility
 function toggleLegend() {
   const legendItems = document.querySelector('.legend-items');
   const legendHeader = document.querySelector('.legend-header');
-  
-  // Toggle the display of the legend items
   if (legendItems.style.display === 'none') {
     legendItems.style.display = 'block';
-    legendHeader.innerHTML = '- Legend'; // Change text to show it is expanded
+    legendHeader.innerHTML = '- Legend';
   } else {
     legendItems.style.display = 'none';
-    legendHeader.innerHTML = '+ Legend'; // Change text to show it is collapsed
-  }
-}
-
-function showDescription() {
-  const description = "SIMA-SN is an interactive map for exploring street networks and related features.";
-  alert(description); // Show the description in an alert box
-}
-
-function toggleDescription() {
-  const descriptionBox = document.getElementById('mapDescription');
-  if (descriptionBox.style.display === 'none') {
-    descriptionBox.style.display = 'block'; // Show the description box
-  } else {
-    descriptionBox.style.display = 'none'; // Hide the description box
+    legendHeader.innerHTML = '+ Legend';
   }
 }
