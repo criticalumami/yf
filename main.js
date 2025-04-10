@@ -160,7 +160,7 @@ async function loadDetailedFeaturesLayer() {
       // Add click event to open a PDF if the feature has a URL property
       if (feature.properties && feature.properties.url) {
         layer.on('click', () => {
-          const pdfPath = `pdf/${feature.properties.url}`;
+          const pdfPath = `${feature.properties.url}`;
           window.open(pdfPath, '_blank');
         });
       }
