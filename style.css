@@ -26,16 +26,31 @@ html, body, #map {
   }
   
   .map-title {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: rgba(255, 255, 255, 0.85);
-    padding: 10px 16px;
-    font-size: 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 20px;
     font-weight: 700;
-    z-index: 1000;
-    border-radius: 4px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    color: #fff;
+    background-color: rgba(51, 51, 51, 0.8); /* Translucent background */
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-bottom: 5px;
+  }
+
+  .map-title:hover::after {
+    content: attr(title); /* Display the title attribute */
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #000;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    white-space: nowrap;
+    font-size: 12px;
+    z-index: 10;
   }
   
   .legend {
@@ -144,3 +159,4 @@ html, body, #map {
     opacity: 0.8;
     pointer-events: none; /* optional: prevents interaction with the mask */
   }
+
