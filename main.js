@@ -1,27 +1,10 @@
-const map = L.map('map', { attributionControl: false });
-
-// Base map setup
-const basemap = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
-  subdomains: 'abcd',
-  maxZoom: 19
-});
-
-const satelliteBasemap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-  attribution: '&copy; <a href="https://www.esri.com/">Esri</a>',
-  maxZoom: 19
-});
-
-// Define the OSM basemap
-const osmBasemap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-  maxZoom: 19
-});
-
-const overlayLayers = {};
+// Constants
+const ICONS_PATH = 'icons/';
+const DATA_PATH = 'data/';
 
 // Layer styles
 const layerStyles = {
-  yfBoundary: { color: '#000', weight: 2, fillColor: '#FFF', fillOpacity: 0.0  },
+  yfBoundary: { color: '#000', weight: 2, fillColor: '#FFF', fillOpacity: 0.0 },
   buildings: { color: '#A9A9A9', weight: 1, fillColor: '#D3D3D3', fillOpacity: 0.5 },
   majorBuildings: { color: '#000', weight: 0.5, fillColor: '#3f3f3f', fillOpacity: 0.9 },
   parks: { color: '#006400', weight: 1, fillColor: '#90EE90', fillOpacity: 0.5 },
@@ -31,208 +14,369 @@ const layerStyles = {
 };
 
 // Icons
-const ICONS_PATH = 'icons/';
-const nodeIcon = L.icon({ iconUrl: `${ICONS_PATH}loz.svg`, iconSize: [20, 20], iconAnchor: [10, 10], popupAnchor: [0, -10] });
-const sportsIcon = L.icon({ iconUrl: `${ICONS_PATH}sports.svg`, iconSize: [20, 20], iconAnchor: [10, 10], popupAnchor: [0, -10] });
+const nodeIcon = L.icon({ 
+  iconUrl: `${ICONS_PATH}loz.svg`, 
+  iconSize: [20, 20], 
+  iconAnchor: [10, 10], 
+  popupAnchor: [0, -10] 
+});
 
-// Add control layers and scale to map
-L.control.scale({ position: 'bottomright', imperial: false, metric: true }).addTo(map);
+const sportsIcon = L.icon({ 
+  iconUrl: `${ICONS_PATH}sports.svg`, 
+  iconSize: [20, 20], 
+  iconAnchor: [10, 10], 
+  popupAnchor: [0, -10] 
+});
 
-// North Arrow control
-const northArrow = L.control({ position: 'bottomright' });
-northArrow.onAdd = function () {
-  const div = L.DomUtil.create('div', 'north-arrow');
-  div.innerHTML = '<img src="icons/north-arrow.svg" alt="North Arrow" style="width: 40px; height: 40px;">';
-  return div;
+// Loading indicator management
+const loadingManager = {
+  element: null,
+  totalTasks: 0,
+  completedTasks: 0,
+  loadingText: null,
+  
+  initialize() {
+    this.element = document.getElementById('loading-container');
+    this.loadingText = document.querySelector('.loading-text');
+  },
+  
+  addTask() {
+    this.totalTasks++;
+    this.updateProgress();
+  },
+  
+  completeTask(taskName) {
+    this.completedTasks++;
+    this.updateProgress(taskName);
+    
+    if (this.completedTasks >= this.totalTasks) {
+      this.hideLoader();
+    }
+  },
+  
+  updateProgress(taskName) {
+    const percentage = Math.floor((this.completedTasks / this.totalTasks) * 100);
+    if (taskName) {
+      this.loadingText.textContent = `Loading: ${taskName} (${percentage}%)`;
+    } else {
+      this.loadingText.textContent = `Loading SIMA data... (${percentage}%)`;
+    }
+  },
+  
+  hideLoader() {
+    setTimeout(() => {
+      this.element.style.opacity = '0';
+      setTimeout(() => {
+        this.element.style.display = 'none';
+      }, 500);
+    }, 500);
+  }
 };
-northArrow.addTo(map);
+
+// Create and configure the map
+function initializeMap() {
+  const map = L.map('map', { attributionControl: false });
+  
+  // Base maps
+  const basemapLayers = {
+    "OSM": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxZoom: 19
+    }),
+    "Basemap": L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+      subdomains: 'abcd',
+      maxZoom: 19
+    }),
+    "Satellite": L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: '&copy; <a href="https://www.esri.com/">Esri</a>',
+      maxZoom: 19
+    }),
+    "White Background": L.tileLayer('', { 
+      noWrap: true, 
+      minZoom: 0, 
+      maxZoom: 19, 
+      attribution: '' 
+    })
+  };
+  
+  // Add default basemap
+  basemapLayers["Basemap"].addTo(map);
+  
+  // Add controls
+  L.control.scale({ 
+    position: 'bottomright', 
+    imperial: false, 
+    metric: true 
+  }).addTo(map);
+  
+  // Add north arrow
+  const northArrow = L.control({ position: 'bottomright' });
+  northArrow.onAdd = function () {
+    const div = L.DomUtil.create('div', 'north-arrow');
+    div.innerHTML = `<img src="${ICONS_PATH}north-arrow.svg" alt="North Arrow">`;
+    return div;
+  };
+  northArrow.addTo(map);
+  
+  return { map, basemapLayers };
+}
 
 // Utility functions
-async function loadGeoJSON(path) {
+async function loadGeoJSON(filename) {
+  loadingManager.addTask();
   try {
-    const res = await fetch(`data/${path}`);
-    if (!res.ok) throw new Error(`Failed to load ${path}`);
-    return await res.json();
-  } catch (err) {
-    console.error(err);
+    const response = await fetch(`${DATA_PATH}${filename}`);
+    if (!response.ok) {
+      throw new Error(`Failed to load ${filename}`);
+    }
+    const data = await response.json();
+    loadingManager.completeTask(filename);
+    return data;
+  } catch (error) {
+    console.error(`Error loading ${filename}:`, error);
+    loadingManager.completeTask(filename);
     return { type: 'FeatureCollection', features: [] };
   }
 }
 
-function featuresInsideYF(features) {
-  return features.filter(f => turf.booleanIntersects(turf.feature(f.geometry), window.yfPolygon));
+function featuresInsideYF(features, yfPolygon) {
+  return features.filter(feature => 
+    turf.booleanIntersects(turf.feature(feature.geometry), yfPolygon)
+  );
 }
 
 function createMaskFromPolygon(yfGeoJSON) {
   const outer = [[[ -180, -90 ], [ -180, 90 ], [ 180, 90 ], [ 180, -90 ], [ -180, -90 ]]];
-  const maskCoords = outer.concat(yfGeoJSON.features[0].geometry.coordinates.map(ring => ring.map(c => [c[0], c[1]])));
+  const maskCoords = outer.concat(
+    yfGeoJSON.features[0].geometry.coordinates.map(ring => 
+      ring.map(coord => [coord[0], coord[1]])
+    )
+  );
 
   return L.geoJSON({
     type: "Feature",
     geometry: { type: "Polygon", coordinates: maskCoords }
   }, {
     className: 'yf-mask',
-    interactive: false // Ensure the mask does not block interactions
+    interactive: false
   });
 }
 
 // Layer loading functions
-async function loadYFBoundary() {
-  const yfData = await loadGeoJSON('YF.geojson');
-  window.yfPolygon = turf.feature(yfData.features[0].geometry);
+class LayerLoader {
+  constructor(map) {
+    this.map = map;
+    this.overlayLayers = {};
+    this.yfPolygon = null;
+  }
+  
+  async loadYFBoundary() {
+    const yfData = await loadGeoJSON('YF.geojson');
+    this.yfPolygon = turf.feature(yfData.features[0].geometry);
 
-  const yfLayer = L.geoJSON(yfData, { style: layerStyles.yfBoundary }).addTo(map);
-  overlayLayers["YF Boundary"] = yfLayer;
-  map.fitBounds(yfLayer.getBounds());
-}
+    const yfLayer = L.geoJSON(yfData, { 
+      style: layerStyles.yfBoundary 
+    }).addTo(this.map);
+    
+    this.overlayLayers["YF Boundary"] = yfLayer;
+    this.map.fitBounds(yfLayer.getBounds());
+    
+    // Create and add YF mask
+    const yfMask = createMaskFromPolygon(yfData);
+    yfMask.addTo(this.map);
+    
+    return this.yfPolygon;
+  }
+  
+  async loadGeneralLayers() {
+    const layersConfig = [
+      { key: 'Buildings', file: 'bhbldg.geojson', style: layerStyles.buildings },
+      { key: 'Major Buildings', file: 'maj_b.geojson', style: layerStyles.majorBuildings },
+      { key: 'Parks', file: 'parks.geojson', style: layerStyles.parks },
+      { key: 'SIMA Projects', file: 'sima.geojson', style: layerStyles.simaProjects },
+      { key: 'Survey', file: 'surv.geojson', style: layerStyles.survey }
+    ];
 
-async function loadGeneralLayers() {
-  const layersConfig = [
-    { key: 'Buildings', file: 'bhbldg.geojson', style: layerStyles.buildings },
-    { key: 'Major Buildings', file: 'maj_b.geojson', style: layerStyles.majorBuildings },
-    { key: 'Parks', file: 'parks.geojson', style: layerStyles.parks },
-    { key: 'SIMA Projects', file: 'sima.geojson', style: layerStyles.simaProjects },
-    { key: 'Survey', file: 'surv.geojson', style: layerStyles.survey }
-  ];
+    for (const { key, file, style } of layersConfig) {
+      const data = await loadGeoJSON(file);
+      const features = featuresInsideYF(data.features, this.yfPolygon);
+      
+      const layer = L.geoJSON({ 
+        type: 'FeatureCollection', 
+        features 
+      }, { style }).addTo(this.map);
+      
+      this.overlayLayers[key] = layer;
+    }
+  }
+  
+  async loadNodesLayer() {
+    const nodesData = await loadGeoJSON('nodes.geojson');
+    const nodesLayer = L.layerGroup();
+    
+    nodesData.features.forEach(feature => {
+      const coords = turf.centroid(feature).geometry.coordinates;
+      const marker = L.marker([coords[1], coords[0]], { 
+        icon: nodeIcon 
+      });
+      
+      marker.bindPopup(feature.properties.Name || "Unnamed");
+      marker.addTo(nodesLayer);
+    });
+    
+    nodesLayer.addTo(this.map);
+    this.overlayLayers["Nodes"] = nodesLayer;
+  }
+  
+  async loadPhotosLayer() {
+    const photosData = await loadGeoJSON('pho.geojson');
+    const photosLayer = L.layerGroup();
+    
+    photosData.features.forEach(feature => {
+      const coords = turf.centroid(feature).geometry.coordinates;
+      const direction = feature.properties.direction || 0;
+      const photoUri = feature.properties.uri || "photos/default.jpg";
 
-  for (const { key, file, style } of layersConfig) {
-    const data = await loadGeoJSON(file);
-    const features = featuresInsideYF(data.features);
-    const layer = L.geoJSON({ type: 'FeatureCollection', features }, { style }).addTo(map);
-    overlayLayers[key] = layer;
+      const photoIcon = L.divIcon({
+        className: 'photo-icon',
+        html: `<img src="${ICONS_PATH}photo.svg" style="transform: rotate(${direction}deg);">`,
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+        popupAnchor: [0, -12]
+      });
+
+      const marker = L.marker([coords[1], coords[0]], { icon: photoIcon });
+      marker.bindPopup(`
+        <div class="photo-popup">
+          <img src="${photoUri}" alt="Site photo">
+          <div class="photo-caption">${photoUri}</div>
+        </div>
+      `);
+      
+      marker.addTo(photosLayer);
+    });
+
+    photosLayer.addTo(this.map);
+    this.overlayLayers["Photos"] = photosLayer;
+  }
+  
+  async loadSportsLayer() {
+    const cultSpoData = await loadGeoJSON('cult_spo.geojson');
+    const sportsLayer = L.layerGroup();
+    
+    featuresInsideYF(cultSpoData.features, this.yfPolygon).forEach(feature => {
+      const coords = turf.centroid(feature).geometry.coordinates;
+      const marker = L.marker([coords[1], coords[0]], { 
+        icon: sportsIcon 
+      });
+      
+      marker.bindPopup(feature.properties.Name || "Unnamed");
+      marker.addTo(sportsLayer);
+    });
+
+    sportsLayer.addTo(this.map);
+    this.overlayLayers["Sports"] = sportsLayer;
+  }
+  
+  async loadDetailedFeaturesLayer() {
+    const detData = await loadGeoJSON('det.geojson');
+    
+    const detLayer = L.geoJSON(detData, {
+      style: layerStyles.detLayer,
+      onEachFeature: (feature, layer) => {
+        // Add click event to open a PDF if available
+        if (feature.properties?.url) {
+          layer.on('click', () => {
+            window.open(feature.properties.url, '_blank');
+          });
+        }
+
+        // Add a tooltip if the feature has a name
+        if (feature.properties?.name) {
+          const bounds = layer.getBounds();
+          const topCenter = [
+            bounds.getNorth(), 
+            (bounds.getWest() + bounds.getEast()) / 2
+          ];
+          
+          const tooltip = L.tooltip({
+            permanent: true,
+            direction: 'center',
+            className: 'polygon-label',
+            offset: [0, -30]
+          })
+            .setLatLng(topCenter)
+            .setContent(`<span class="feature-label">${feature.properties.name}</span>`);
+            
+          this.map.addLayer(tooltip);
+        }
+      }
+    });
+
+    detLayer.addTo(this.map);
+    this.overlayLayers["Detailed Features"] = detLayer;
+  }
+  
+  getOverlayLayers() {
+    return this.overlayLayers;
   }
 }
 
-async function loadNodesLayer() {
-  const nodesData = await loadGeoJSON('nodes.geojson');
-  const nodesLayer = L.layerGroup();
-  nodesData.features.forEach(feature => {
-    const coords = turf.centroid(feature).geometry.coordinates;
-    const marker = L.marker([coords[1], coords[0]], { icon: nodeIcon }).addTo(nodesLayer);
-    marker.bindPopup(feature.properties.Name || "Unnamed");
-  });
-  nodesLayer.addTo(map);
-  overlayLayers["Nodes"] = nodesLayer;
-}
-
-async function loadPhotosLayer() {
-  const phoData = await loadGeoJSON('pho.geojson');
-  const phoLayer = L.layerGroup();
-  phoData.features.forEach(feature => {
-    const coords = turf.centroid(feature).geometry.coordinates;
-    const direction = feature.properties.direction || 0;
-    const photoUri = feature.properties.uri || "photos/default.jpg";
-
-    const photoIcon = L.divIcon({
-      className: 'photo-icon',
-      html: `<img src="${ICONS_PATH}photo.svg" style="width: 24px; height: 24px; transform: rotate(${direction}deg);">`,
-      iconSize: [24, 24],
-      iconAnchor: [12, 12],
-      popupAnchor: [0, -12]
-    });
-
-    const marker = L.marker([coords[1], coords[0]], { icon: photoIcon }).addTo(phoLayer);
-    marker.bindPopup(`<div style="text-align: center;"><img src="${photoUri}" style="width: 300px; height: auto; margin-bottom: 8px;"><br><strong>${photoUri}</strong></div>`);
-  });
-
-  phoLayer.addTo(map);
-  overlayLayers["Photos"] = phoLayer;
-}
-
-async function loadSportsLayer() {
-  const cultSpoData = await loadGeoJSON('cult_spo.geojson');
-  const sportsLayer = L.layerGroup();
-  featuresInsideYF(cultSpoData.features).forEach(feature => {
-    const coords = turf.centroid(feature).geometry.coordinates;
-    const marker = L.marker([coords[1], coords[0]], { icon: sportsIcon }).addTo(sportsLayer);
-    marker.bindPopup(feature.properties.Name || "Unnamed");
-  });
-
-  sportsLayer.addTo(map);
-  overlayLayers["Sports"] = sportsLayer;
-}
-
-async function loadDetailedFeaturesLayer() {
-  const detData = await loadGeoJSON('det.geojson');
-  const detLayer = L.geoJSON(detData, {
-    style: layerStyles.detLayer,
-    onEachFeature: (feature, layer) => {
-      // Add click event to open a PDF if the feature has a URL property
-      if (feature.properties && feature.properties.url) {
-        layer.on('click', () => {
-          const pdfPath = `${feature.properties.url}`;
-          window.open(pdfPath, '_blank');
-        });
-      }
-
-      // Add a tooltip if the feature has a name property
-      if (feature.properties && feature.properties.name) {
-        const bounds = layer.getBounds();
-        const topCenter = [bounds.getNorth(), (bounds.getWest() + bounds.getEast()) / 2];
-        const tooltip = L.tooltip({
-          permanent: true,
-          direction: 'center',
-          className: 'polygon-label',
-          offset: [0, -30]
-        })
-          .setLatLng(topCenter)
-          .setContent(`<span style="color: #FF4500; background-color: #FFFFFF">${feature.properties.name}</span>`);
-        map.addLayer(tooltip);
-      }
-    }
-  });
-
-  // Add the det layer to the map last to ensure it is on top
-  detLayer.addTo(map);
-  overlayLayers["Detailed Features"] = detLayer;
-}
-
-// Main initialization
-async function loadMain() {
-  try {
-    await loadYFBoundary();
-    await loadGeneralLayers();
-    await loadNodesLayer();
-    await loadPhotosLayer();
-    await loadSportsLayer();
-
-    const whiteBackground = L.tileLayer('', { noWrap: true, minZoom: 0, maxZoom: 19, attribution: '' });
-    const yfData = await loadGeoJSON('YF.geojson');
-    const yfMask = createMaskFromPolygon(yfData);
-    map.addLayer(yfMask); // Add the mask before other layers
-
-    await loadDetailedFeaturesLayer(); // Add the det layer last to ensure it is on top
-
-    // Add layer control with basemaps and boundaries
-    L.control.layers({
-      "OSM": osmBasemap,
-      "Basemap": basemap,
-      "Satellite": satelliteBasemap,
-      "White Background": whiteBackground
-    }, overlayLayers, { position: 'bottomright' }).addTo(map);
-
-    const legendItems = document.querySelector('.legend-items');
-    const legendHeader = document.querySelector('.legend-header');
-    if (legendItems && legendHeader) {
+// Setup legend toggling
+function setupLegendToggle() {
+  const legendItems = document.querySelector('.legend-items');
+  const legendHeader = document.querySelector('.legend-header');
+  
+  legendHeader.addEventListener('click', () => {
+    if (legendItems.style.display === 'none' || !legendItems.style.display) {
+      legendItems.style.display = 'block';
+      legendHeader.innerHTML = '- Legend';
+    } else {
       legendItems.style.display = 'none';
       legendHeader.innerHTML = '+ Legend';
     }
-  } catch (err) {
-    console.error('Map loading failed:', err);
+  });
+  
+  // Initially hide the legend items
+  legendItems.style.display = 'none';
+}
+
+// Main initialization
+async function initializeApplication() {
+  try {
+    // Initialize loading manager
+    loadingManager.initialize();
+    
+    // Initialize map
+    const { map, basemapLayers } = initializeMap();
+    
+    // Setup legend toggle
+    setupLegendToggle();
+    
+    // Initialize layer loader
+    const layerLoader = new LayerLoader(map);
+    
+    // Load layers
+    await layerLoader.loadYFBoundary();
+    await layerLoader.loadGeneralLayers();
+    await layerLoader.loadNodesLayer();
+    await layerLoader.loadPhotosLayer();
+    await layerLoader.loadSportsLayer();
+    await layerLoader.loadDetailedFeaturesLayer();
+    
+    // Add layer control
+    L.control.layers(
+      basemapLayers,
+      layerLoader.getOverlayLayers(), 
+      { position: 'bottomright' }
+    ).addTo(map);
+    
+  } catch (error) {
+    console.error('Map initialization failed:', error);
+    // Make sure loading indicator is hidden even if there's an error
+    loadingManager.hideLoader();
   }
 }
 
-loadMain();
-
-// Toggle legend visibility
-function toggleLegend() {
-  const legendItems = document.querySelector('.legend-items');
-  const legendHeader = document.querySelector('.legend-header');
-  if (legendItems.style.display === 'none') {
-    legendItems.style.display = 'block';
-    legendHeader.innerHTML = '- Legend';
-  } else {
-    legendItems.style.display = 'none';
-    legendHeader.innerHTML = '+ Legend';
-  }
-}
+// Start the application
+document.addEventListener('DOMContentLoaded', initializeApplication);

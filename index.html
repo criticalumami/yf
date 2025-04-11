@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>SIMA - Street Network</title>
+  
+  <!-- External resources -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
@@ -22,9 +23,16 @@
   <meta name="twitter:image" content="thumb.png" />
 </head>
 <body>
-  <div class="map-title" id="mapTitle">SIMA-SN</div>
-  <div class="legend" id="legend">
-    <div class="legend-header" onclick="toggleLegend()">+ Legend</div>
+  <!-- Loading Indicator -->
+  <div id="loading-container">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Loading SIMA data...</div>
+  </div>
+  
+  <div class="map-title">SIMA-SN</div>
+  
+  <div class="legend">
+    <div class="legend-header">+ Legend</div>
     <div class="legend-items">
       <div class="legend-item"><div class="legend-color yf"></div> &nbsp;&nbsp;YF Boundary</div>
       <div class="legend-item"><div class="legend-color maj_b"></div> &nbsp;&nbsp;Major Buildings</div>
@@ -38,9 +46,12 @@
       <div class="legend-item"><div class="legend-color det"></div> &nbsp;&nbsp;Detailed Features</div>
     </div>
   </div>
+  
   <div id="map"></div>
+  
+  <!-- External scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@turf/turf"></script>
-  <script src="main.js" defer></script>
+  <script src="main.js"></script>
 </body>
 </html>
