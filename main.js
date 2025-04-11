@@ -405,7 +405,7 @@ function loadDetailedZonesLayer() {
                     // Add click event to open a PDF if available
                     if (feature.properties?.url) {
                         layer.on('click', () => {
-                            window.open(`pdf/${feature.properties.url}`, '_blank');
+                            window.open(`${feature.properties.url}`, '_blank');
                         });
                         
                         layer.on('mouseover', function() {
