@@ -129,7 +129,7 @@ html, body {
 /* YF mask layer */
 .yf-mask {
   fill: white;
-  fill-opacity: 0.9;
+  fill-opacity: 0.5;
   stroke: none;
   pointer-events: none;
 }
