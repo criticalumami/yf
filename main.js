@@ -418,7 +418,7 @@ function loadDetailedZonesLayer() {
                 }
             });
             
-            detLayer.addTo(map);
+            detLayer.addTo(map).bringToFront();
             layers.detailedZones = detLayer;
             layerControl.addOverlay(detLayer, 'Detailed Zones');
             
