@@ -40,16 +40,14 @@ const STYLES = {
         className: 'major-buildings-layer'
     },
     surveyLines: {
-        color: '#000000',
-        weight: 0.25,
-        className: 'survey-lines-layer'
+        color: '#cccccc',
+        weight: 1
     },
     parks: {
-        color: '#006400',
-        weight: 1,
-        fillColor: '#90EE90',
+        color: 'darkgreen',
+        fillColor: 'lightgreen',
         fillOpacity: 0.5,
-        className: 'parks-layer'
+        weight: 1
     },
     simaProjects: {
         color: '#00bfff',
@@ -60,10 +58,9 @@ const STYLES = {
     },
     detailedZones: {
         color: '#FFA500',
-        weight: 3,
+        weight: 2, // instead of 3
         fillColor: '#FFE4B5',
-        fillOpacity: 0.6,
-        className: 'detailed-zones-layer'
+        fillOpacity: 0.6
     }
 };
 

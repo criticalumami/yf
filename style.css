@@ -120,10 +120,10 @@ html, body {
 
 /* Detailed zones layer */
 .detailed-zones-layer {
-  fill: #FFA07A;
-  fill-opacity: 0.05;
+  fill: #FFE4B5;
+  fill-opacity: 0.6;
   stroke: #FFA500;
-  stroke-width: 3px;
+  stroke-width: 2px; /* Was 3px */
 }
 
 /* YF mask layer */
@@ -184,13 +184,10 @@ html, body {
 
 /* Detailed zones labels */
 .feature-label {
-  background: none !important;
-  border: none !important;
-  box-shadow: none !important;
   font-family: 'IBM Plex Mono', monospace;
   font-size: 14px;
   font-weight: 500;
-  color: #FF4500;
+  color: #FFA500;
   text-shadow: 
       -1px -1px 0 #fff, 
       1px -1px 0 #fff, 
@@ -198,6 +195,10 @@ html, body {
       1px 1px 0 #fff;
   white-space: nowrap;
   pointer-events: none;
+  transform: translateX(-120%);
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 .polygon-label {
