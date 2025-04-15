@@ -26,17 +26,9 @@ const STYLES = {
         fillOpacity: 0
     },
     buildings: {
-        color: '#A9A9A9',
-        weight: 1,
-        fillColor: '#D3D3D3',
-        fillOpacity: 0.5,
         className: 'buildings-layer'
     },
     majorBuildings: {
-        color: '#000',
-        weight: 0.5,
-        fillColor: '#3f3f3f',
-        fillOpacity: 0.9,
         className: 'major-buildings-layer'
     },
     surveyLines: {
@@ -60,7 +52,8 @@ const STYLES = {
         color: '#FFA500',
         weight: 2,
         fillColor: '#FFE4B5',
-        fillOpacity: 0.6
+        fillOpacity: 0.6,
+        className: 'detailed-zones-layer'
     }
 };
 
@@ -68,35 +61,26 @@ const STYLES = {
 const ICONS = {
     node: L.icon({
         iconUrl: 'icons/loz.svg',
-        iconSize: [20, 20],
-        iconAnchor: [10, 10],
-        popupAnchor: [0, -10]
+        iconSize: [24, 24],
+        iconAnchor: [12, 12]
     }),
     sports: L.icon({
         iconUrl: 'icons/sports.svg',
-        iconSize: [20, 20],
-        iconAnchor: [10, 10],
-        popupAnchor: [0, -10]
+        iconSize: [24, 24],
+        iconAnchor: [12, 12]
     }),
-    photo: function(direction) {
-        return L.divIcon({
-            className: 'photo-icon',
-            html: `<img src="icons/photo.svg" style="transform: rotate(${direction || 0}deg);">`,
-            iconSize: [24, 24],
-            iconAnchor: [12, 12],
-            popupAnchor: [0, -12]
-        });
-    }
+    photo: L.icon({
+        iconUrl: 'icons/photo.svg',
+        iconSize: [24, 24],
+        iconAnchor: [12, 12]
+    })
 };
 
 // Initialize map and base layers
 function initMap() {
     map = L.map('map', { 
         attributionControl: false,
-        zoomControl: true,
-        zoomAnimation: true,
-        zoomAnimationThreshold: 4,
-        fadeAnimation: true
+        zoomControl: true
     });
 
     // Define basemaps
@@ -192,7 +176,7 @@ function loadBoundary() {
                 
                 // Add the boundary line separately
                 const boundaryLayer = L.geoJSON(feature, {
-                    className: 'boundary-layer'
+                    style: STYLES.boundary
                 }).addTo(map);
                 
                 // Store reference and fit map to boundary
@@ -226,30 +210,21 @@ function createBoundaryMask(feature) {
     const maskCoords = [outerBounds, innerHole];
     
     // Create and add the mask layer
-    const maskLayer = L.polygon(maskCoords, {
-        className: 'mask-layer',
-        interactive: false
-    }).addTo(map);
-    
+    const maskLayer = L.polygon(maskCoords, STYLES.mask).addTo(map);
     layers.mask = maskLayer;
     
     return maskLayer;
 }
 
 // Generic function to load GeoJSON layer
-function loadLayer(id, url, style, addToMap = false, filter = true) {
+function loadLayer(id, url, options, addToMap = false) {
     return fetch(url)
         .then(response => {
             if (!response.ok) throw new Error(`Failed to load ${url}`);
             return response.json();
         })
         .then(data => {
-            // Filter features within YF boundary if needed
-            if (filter && layers.yfPolygon) {
-                data.features = filterFeaturesInsideBoundary(data.features, layers.yfPolygon);
-            }
-            
-            const layer = L.geoJSON(data, { style });
+            const layer = L.geoJSON(data, options);
             
             if (addToMap) {
                 layer.addTo(map);
@@ -264,13 +239,6 @@ function loadLayer(id, url, style, addToMap = false, filter = true) {
             console.error(`Error loading ${id}:`, error);
             return null;
         });
-}
-
-// Filter features inside YF boundary
-function filterFeaturesInsideBoundary(features, boundary) {
-    return features.filter(feature => 
-        turf.booleanIntersects(turf.feature(feature.geometry), boundary)
-    );
 }
 
 // Load nodes layer
@@ -290,7 +258,7 @@ function loadNodesLayer() {
                     marker.bindTooltip(feature.properties.Name || "Unnamed", {
                         permanent: false,
                         direction: 'top',
-                        offset: [0, -10],
+                        offset: [0, -12],
                         className: 'node-label'
                     });
                     
@@ -320,17 +288,15 @@ function loadPhotosLayer() {
         .then(data => {
             const photosLayer = L.geoJSON(data, {
                 pointToLayer: function (feature, latlng) {
-                    const direction = feature.properties.direction || 0;
                     const photoUri = feature.properties.uri || "photos/default.jpg";
                     
                     const marker = L.marker(latlng, { 
-                        icon: ICONS.photo(direction)
+                        icon: ICONS.photo
                     });
                     
                     marker.bindPopup(`
                         <div class="photo-popup">
                             <img src="${photoUri}" alt="Site photo">
-                            <div class="photo-caption">${photoUri}</div>
                         </div>
                     `);
                     
@@ -358,11 +324,6 @@ function loadSportsLayer() {
             return response.json();
         })
         .then(data => {
-            // Filter features inside YF boundary
-            if (layers.yfPolygon) {
-                data.features = filterFeaturesInsideBoundary(data.features, layers.yfPolygon);
-            }
-            
             const sportsLayer = L.geoJSON(data, {
                 pointToLayer: function (feature, latlng) {
                     const marker = L.marker(latlng, { 
@@ -396,7 +357,7 @@ function loadDetailedZonesLayer() {
         })
         .then(data => {
             const detLayer = L.geoJSON(data, {
-                className: 'detailed-zones-layer',
+                style: STYLES.detailedZones,
                 onEachFeature: function(feature, layer) {
                     // Add click event to open a PDF if available
                     if (feature.properties?.url) {
