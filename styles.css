@@ -1,0 +1,8 @@
+/* Mask layer for basemap opacity */
+.mask-layer {
+    fill: white;
+    fill-opacity: 0.7;
+    stroke: none;
+    pointer-events: none;
+    z-index: 1000;
+} 

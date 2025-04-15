@@ -209,11 +209,25 @@ function createBoundaryMask(feature) {
     // Combine outer bounds and inner hole for the mask polygon
     const maskCoords = [outerBounds, innerHole];
     
-    // Create and add the mask layer
-    const maskLayer = L.polygon(maskCoords, STYLES.mask).addTo(map);
+    // Create and add the mask layer with increased opacity
+    const maskLayer = L.polygon(maskCoords, {
+        fillColor: 'white',
+        fillOpacity: 0.7,
+        stroke: false,
+        interactive: false,
+        className: 'mask-layer'
+    }).addTo(map);
+    
     layers.mask = maskLayer;
     
     return maskLayer;
+}
+
+// Filter features inside YF boundary
+function filterFeaturesInsideBoundary(features, boundary) {
+    return features.filter(feature => 
+        turf.booleanIntersects(turf.feature(feature.geometry), boundary)
+    );
 }
 
 // Generic function to load GeoJSON layer
@@ -224,6 +238,11 @@ function loadLayer(id, url, options, addToMap = false) {
             return response.json();
         })
         .then(data => {
+            // Filter features within YF boundary
+            if (layers.yfPolygon) {
+                data.features = filterFeaturesInsideBoundary(data.features, layers.yfPolygon);
+            }
+            
             const layer = L.geoJSON(data, options);
             
             if (addToMap) {
@@ -249,6 +268,11 @@ function loadNodesLayer() {
             return response.json();
         })
         .then(data => {
+            // Filter features within YF boundary
+            if (layers.yfPolygon) {
+                data.features = filterFeaturesInsideBoundary(data.features, layers.yfPolygon);
+            }
+            
             const nodesLayer = L.geoJSON(data, {
                 pointToLayer: function(feature, latlng) {
                     const marker = L.marker(latlng, { 
@@ -286,6 +310,11 @@ function loadPhotosLayer() {
             return response.json();
         })
         .then(data => {
+            // Filter features within YF boundary
+            if (layers.yfPolygon) {
+                data.features = filterFeaturesInsideBoundary(data.features, layers.yfPolygon);
+            }
+            
             const photosLayer = L.geoJSON(data, {
                 pointToLayer: function (feature, latlng) {
                     const photoUri = feature.properties.uri || "photos/default.jpg";
@@ -324,6 +353,11 @@ function loadSportsLayer() {
             return response.json();
         })
         .then(data => {
+            // Filter features within YF boundary
+            if (layers.yfPolygon) {
+                data.features = filterFeaturesInsideBoundary(data.features, layers.yfPolygon);
+            }
+            
             const sportsLayer = L.geoJSON(data, {
                 pointToLayer: function (feature, latlng) {
                     const marker = L.marker(latlng, { 
@@ -356,6 +390,11 @@ function loadDetailedZonesLayer() {
             return response.json();
         })
         .then(data => {
+            // Filter features within YF boundary
+            if (layers.yfPolygon) {
+                data.features = filterFeaturesInsideBoundary(data.features, layers.yfPolygon);
+            }
+            
             const detLayer = L.geoJSON(data, {
                 style: STYLES.detailedZones,
                 onEachFeature: function(feature, layer) {
