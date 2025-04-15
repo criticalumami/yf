@@ -58,7 +58,7 @@ const STYLES = {
     },
     detailedZones: {
         color: '#FFA500',
-        weight: 2, // instead of 3
+        weight: 2,
         fillColor: '#FFE4B5',
         fillOpacity: 0.6
     }
@@ -93,7 +93,10 @@ const ICONS = {
 function initMap() {
     map = L.map('map', { 
         attributionControl: false,
-        zoomControl: true
+        zoomControl: true,
+        zoomAnimation: true,
+        zoomAnimationThreshold: 4,
+        fadeAnimation: true
     });
 
     // Define basemaps
@@ -189,7 +192,7 @@ function loadBoundary() {
                 
                 // Add the boundary line separately
                 const boundaryLayer = L.geoJSON(feature, {
-                    style: STYLES.boundary
+                    className: 'boundary-layer'
                 }).addTo(map);
                 
                 // Store reference and fit map to boundary
@@ -224,7 +227,7 @@ function createBoundaryMask(feature) {
     
     // Create and add the mask layer
     const maskLayer = L.polygon(maskCoords, {
-        className: 'yf-mask',
+        className: 'mask-layer',
         interactive: false
     }).addTo(map);
     
@@ -393,7 +396,7 @@ function loadDetailedZonesLayer() {
         })
         .then(data => {
             const detLayer = L.geoJSON(data, {
-                style: STYLES.detailedZones,
+                className: 'detailed-zones-layer',
                 onEachFeature: function(feature, layer) {
                     // Add click event to open a PDF if available
                     if (feature.properties?.url) {
@@ -407,7 +410,7 @@ function loadDetailedZonesLayer() {
                         });
                         
                         layer.on('mouseout', function() {
-                            layer.setStyle({ fillOpacity: 0.05 });
+                            layer.setStyle({ fillOpacity: 0.6 });
                         });
                     }
                     
@@ -418,8 +421,14 @@ function loadDetailedZonesLayer() {
                 }
             });
             
+            // Remove and re-add layers to ensure det layer is on top
+            if (layers.photos) map.removeLayer(layers.photos);
+            if (layers.nodes) map.removeLayer(layers.nodes);
             detLayer.addTo(map).bringToFront();
             layers.detailedZones = detLayer;
+            if (layers.photos) layers.photos.addTo(map);
+            if (layers.nodes) layers.nodes.addTo(map);
+            
             layerControl.addOverlay(detLayer, 'Detailed Zones');
             
             return detLayer;
@@ -433,19 +442,21 @@ function loadDetailedZonesLayer() {
 // Add label for detailed zone
 function addZoneLabel(feature, layer) {
     const bounds = layer.getBounds();
-    const center = bounds.getCenter();
-    
-    // Create a tooltip for the label
+    const northEast = bounds.getNorthEast();
+    const offsetLat = 0.00015; // Adjust for distance outside the rectangle
+    const offsetLng = 0.00015;
+
+    const outsidePos = L.latLng(northEast.lat + offsetLat, northEast.lng + offsetLng);
+
     const tooltip = L.tooltip({
         permanent: true,
-        direction: 'center',
+        direction: 'right',
         className: 'polygon-label',
         offset: [0, 0]
     })
-    .setLatLng(center)
+    .setLatLng(outsidePos)
     .setContent(`<span class="feature-label">${feature.properties.name}</span>`);
-    
-    // Add the tooltip to the map
+
     tooltip.addTo(map);
 }
 
