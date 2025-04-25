@@ -80,7 +80,20 @@ const ICONS = {
 function initMap() {
     map = L.map('map', { 
         attributionControl: false,
-        zoomControl: true
+        zoomControl: true,
+        scrollWheelZoom: false  // Disable scroll wheel zoom by default
+    });
+
+    // Enable scroll zoom only when map receives focus through clicking
+    map.on('click', function() {
+        if (!map.scrollWheelZoom.enabled()) {
+            map.scrollWheelZoom.enable();
+        }
+    });
+    
+    // Disable scroll zoom when mouse leaves the map
+    map.on('mouseout', function() {
+        map.scrollWheelZoom.disable();
     });
 
     // Define basemaps
