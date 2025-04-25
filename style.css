@@ -316,14 +316,43 @@ html, body {
 
 /* Map interaction message */
 .map-interaction-msg {
-    background: rgba(255, 255, 255, 0.9);
-    padding: 8px 12px;
-    border-radius: 4px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-    margin: 10px;
-    font-size: 14px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    font-size: 18px;
     font-weight: 500;
-    color: #666;
+    color: #333;
     pointer-events: none;
-    transition: opacity 0.3s ease;
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+}
+
+/* Blur overlay */
+.map-blur-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    background: rgba(255, 255, 255, 0.1);
+    z-index: 1000;
+    pointer-events: none;
+}
+
+/* Override Leaflet control positioning for center position */
+.leaflet-control-container .leaflet-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
 }

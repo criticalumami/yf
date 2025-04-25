@@ -85,26 +85,36 @@ function initMap() {
     });
 
     // Add interaction message control
-    const interactionMsg = L.control({position: 'topleft'});
+    const interactionMsg = L.control({position: 'center'});
     interactionMsg.onAdd = function() {
         const div = L.DomUtil.create('div', 'map-interaction-msg');
-        div.innerHTML = 'Click map to enable zoom';
+        div.innerHTML = 'Click to enable zoom';
         return div;
     };
     interactionMsg.addTo(map);
+
+    // Add blur overlay
+    const blurOverlay = L.control({position: 'center'});
+    blurOverlay.onAdd = function() {
+        const div = L.DomUtil.create('div', 'map-blur-overlay');
+        return div;
+    };
+    blurOverlay.addTo(map);
 
     // Enable scroll zoom only when map receives focus through clicking
     map.on('click', function() {
         if (!map.scrollWheelZoom.enabled()) {
             map.scrollWheelZoom.enable();
             document.querySelector('.map-interaction-msg').style.display = 'none';
+            document.querySelector('.map-blur-overlay').style.display = 'none';
         }
     });
     
     // Disable scroll zoom when mouse leaves the map
     map.on('mouseout', function() {
         map.scrollWheelZoom.disable();
-        document.querySelector('.map-interaction-msg').style.display = 'block';
+        document.querySelector('.map-interaction-msg').style.display = 'flex';
+        document.querySelector('.map-blur-overlay').style.display = 'block';
     });
 
     // Define basemaps
