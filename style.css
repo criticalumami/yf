@@ -314,12 +314,22 @@ html, body {
   }
 }
 
+/* Map interaction message container */
+.leaflet-control-container-center {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* Map interaction message */
 .map-interaction-msg {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     background: rgba(255, 255, 255, 0.95);
     padding: 16px 24px;
     border-radius: 8px;
@@ -328,7 +338,6 @@ html, body {
     font-weight: 500;
     color: #333;
     pointer-events: none;
-    z-index: 1001;
     display: flex;
     align-items: center;
     justify-content: center;

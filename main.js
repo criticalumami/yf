@@ -84,37 +84,36 @@ function initMap() {
         scrollWheelZoom: false  // Disable scroll wheel zoom by default
     });
 
-    // Add interaction message control
-    const interactionMsg = L.control({position: 'center'});
-    interactionMsg.onAdd = function() {
-        const div = L.DomUtil.create('div', 'map-interaction-msg');
-        div.innerHTML = 'Click to enable zoom';
-        return div;
-    };
-    interactionMsg.addTo(map);
+    // Create a custom control center position
+    const centerControlDiv = document.createElement('div');
+    centerControlDiv.className = 'leaflet-control-container-center';
+    map.getContainer().appendChild(centerControlDiv);
+
+    // Add interaction message
+    const interactionMsg = document.createElement('div');
+    interactionMsg.className = 'map-interaction-msg';
+    interactionMsg.innerHTML = 'Click to enable zoom';
+    centerControlDiv.appendChild(interactionMsg);
 
     // Add blur overlay
-    const blurOverlay = L.control({position: 'center'});
-    blurOverlay.onAdd = function() {
-        const div = L.DomUtil.create('div', 'map-blur-overlay');
-        return div;
-    };
-    blurOverlay.addTo(map);
+    const blurOverlay = document.createElement('div');
+    blurOverlay.className = 'map-blur-overlay';
+    map.getContainer().appendChild(blurOverlay);
 
     // Enable scroll zoom only when map receives focus through clicking
     map.on('click', function() {
         if (!map.scrollWheelZoom.enabled()) {
             map.scrollWheelZoom.enable();
-            document.querySelector('.map-interaction-msg').style.display = 'none';
-            document.querySelector('.map-blur-overlay').style.display = 'none';
+            interactionMsg.style.display = 'none';
+            blurOverlay.style.display = 'none';
         }
     });
     
     // Disable scroll zoom when mouse leaves the map
     map.on('mouseout', function() {
         map.scrollWheelZoom.disable();
-        document.querySelector('.map-interaction-msg').style.display = 'flex';
-        document.querySelector('.map-blur-overlay').style.display = 'block';
+        interactionMsg.style.display = 'flex';
+        blurOverlay.style.display = 'block';
     });
 
     // Define basemaps
