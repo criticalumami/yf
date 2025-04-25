@@ -84,16 +84,27 @@ function initMap() {
         scrollWheelZoom: false  // Disable scroll wheel zoom by default
     });
 
+    // Add interaction message control
+    const interactionMsg = L.control({position: 'topleft'});
+    interactionMsg.onAdd = function() {
+        const div = L.DomUtil.create('div', 'map-interaction-msg');
+        div.innerHTML = 'Click map to enable zoom';
+        return div;
+    };
+    interactionMsg.addTo(map);
+
     // Enable scroll zoom only when map receives focus through clicking
     map.on('click', function() {
         if (!map.scrollWheelZoom.enabled()) {
             map.scrollWheelZoom.enable();
+            document.querySelector('.map-interaction-msg').style.display = 'none';
         }
     });
     
     // Disable scroll zoom when mouse leaves the map
     map.on('mouseout', function() {
         map.scrollWheelZoom.disable();
+        document.querySelector('.map-interaction-msg').style.display = 'block';
     });
 
     // Define basemaps
