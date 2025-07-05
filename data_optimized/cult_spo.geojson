@@ -1,0 +1,24 @@
+{
+"type": "FeatureCollection",
+"name": "cult_spo",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "fid": 1, "Name": "Boghossian Theater", "Function": "Culture" }, "geometry": { "type": "Point", "coordinates": [ 35.5393628, 33.8901255 ] } },
+{ "type": "Feature", "properties": { "fid": 2, "Name": "Community Center", "Function": "Culture" }, "geometry": { "type": "Point", "coordinates": [ 35.5459128, 33.8880158 ] } },
+{ "type": "Feature", "properties": { "fid": 3, "Name": "Homentmen Sports Stadium (Armenian Pitch)", "Function": "Sports" }, "geometry": { "type": "Point", "coordinates": [ 35.545822755702474, 33.886518438180858 ] } },
+{ "type": "Feature", "properties": { "fid": 4, "Name": "Bourj Hammoud Basketball Field", "Function": "Sports" }, "geometry": { "type": "Point", "coordinates": [ 35.545177899852241, 33.886779758409382 ] } },
+{ "type": "Feature", "properties": { "fid": 6, "Name": "Homentmen Sports Stadium (Armenian Pitch)", "Function": "Sports" }, "geometry": { "type": "Point", "coordinates": [ 35.546969558094609, 33.88790451481885 ] } },
+{ "type": "Feature", "properties": { "fid": 7, "Name": "Badger Cultural Center", "Function": "Culture" }, "geometry": { "type": "Point", "coordinates": [ 35.537221123288951, 33.893810962215376 ] } },
+{ "type": "Feature", "properties": { "fid": 8, "Name": "Beirut Municipal Stadium", "Function": "Sports" }, "geometry": { "type": "Point", "coordinates": [ 35.498561208595, 33.87420581485808 ] } },
+{ "type": "Feature", "properties": { "fid": 9, "Name": "Al Mourabitoun Center", "Function": "Culture" }, "geometry": { "type": "Point", "coordinates": [ 35.500040227604728, 33.877931328925172 ] } },
+{ "type": "Feature", "properties": { "fid": 10, "Name": "Hippodrome", "Function": "Culture" }, "geometry": { "type": "Point", "coordinates": [ 35.511589470973099, 33.877534748440397 ] } },
+{ "type": "Feature", "properties": { "fid": 11, "Name": "Hippodrome", "Function": "Sports" }, "geometry": { "type": "Point", "coordinates": [ 35.510415461301285, 33.877430867259278 ] } },
+{ "type": "Feature", "properties": { "fid": 12, "Name": "Old House 1", "Function": "Culture" }, "geometry": { "type": "Point", "coordinates": [ 35.538035879849737, 33.891534567706138 ] } },
+{ "type": "Feature", "properties": { "fid": 13, "Name": "Old House 2", "Function": "Culture" }, "geometry": { "type": "Point", "coordinates": [ 35.537776758845027, 33.891806984502374 ] } },
+{ "type": "Feature", "properties": { "fid": 14, "Name": "Azirian Center", "Function": "Culture" }, "geometry": { "type": "Point", "coordinates": [ 35.5394219, 33.8880875 ] } },
+{ "type": "Feature", "properties": { "fid": 15, "Name": "Zavarian Students Association", "Function": "Culture" }, "geometry": { "type": "Point", "coordinates": [ 35.545953664170867, 33.892686892077158 ] } },
+{ "type": "Feature", "properties": { "fid": 16, "Name": "Forum de Beyrouth", "Function": "Culture" }, "geometry": { "type": "Point", "coordinates": [ 35.535758138068729, 33.89820824121864 ] } },
+{ "type": "Feature", "properties": { "fid": 17, "Name": "Zoukak Theater", "Function": "Culture" }, "geometry": { "type": "Point", "coordinates": [ 35.536178533246172, 33.89606401807881 ] } },
+{ "type": "Feature", "properties": { "fid": 18, "Name": "Jisr al-Wati Courts", "Function": "Sports" }, "geometry": { "type": "Point", "coordinates": [ 35.529462237500745, 33.882646911539048 ] } }
+]
+}
