@@ -440,20 +440,15 @@ function loadDetailedZonesLayer() {
 
 // Add label for detailed zone
 function addZoneLabel(feature, layer) {
-    const bounds = layer.getBounds();
-    const northEast = bounds.getNorthEast();
-    const offsetLat = 0.00015; // Adjust for distance outside the rectangle
-    const offsetLng = 0.00015;
-
-    const outsidePos = L.latLng(northEast.lat + offsetLat, northEast.lng + offsetLng);
+    const center = layer.getBounds().getCenter();
 
     const tooltip = L.tooltip({
         permanent: true,
-        direction: 'right',
+        direction: 'center',
         className: 'polygon-label',
         offset: [0, 0]
     })
-    .setLatLng(outsidePos)
+    .setLatLng(center)
     .setContent(`<span class="feature-label">${feature.properties.name}</span>`);
 
     return tooltip;

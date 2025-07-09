@@ -183,16 +183,11 @@ html, body, .leaflet-container {
 /* Detailed zones labels */
 .feature-label {
   font-size: 14px;
-  font-weight: 500;
-  color: #FFA500;
-  text-shadow: 
-      -1px -1px 0 #fff, 
-      1px -1px 0 #fff, 
-      -1px 1px 0 #fff, 
-      1px 1px 0 #fff;
+  font-weight: bold;
+  color: black;
+  text-decoration: underline;
   white-space: nowrap;
   pointer-events: none;
-  transform: translateX(-120%);
   background: none !important;
   border: none !important;
   box-shadow: none !important;
