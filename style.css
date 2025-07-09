@@ -303,7 +303,7 @@ html, body, .leaflet-container {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     font-family: 'Courier New', Courier, monospace !important;
     font-size: 18px;
-    font-weight: 500;
+    font-weight: bold;
     color: #333;
     pointer-events: none;
     display: flex;
