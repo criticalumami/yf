@@ -1,10 +1,10 @@
 /* Base and Layout Styles
 ------------------------------------------ */
-html, body {
+html, body, .leaflet-container {
   margin: 0;
   padding: 0;
   height: 100%;
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: 'Courier New', Courier, monospace !important;
 }
 
 #map {
@@ -29,8 +29,9 @@ html, body {
 
 /* Map title */
 .map-title {
+  font-family: 'Courier New', Courier, monospace !important;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: bold;
   color: #333;
   padding: 8px 12px;
 }
@@ -138,14 +139,12 @@ html, body {
 ------------------------------------------ */
 /* Base tooltip style */
 .custom-tooltip {
-  font-family: 'IBM Plex Mono', monospace;
   font-size: 12px;
   font-weight: 400;
 }
 
 /* Node labels */
 .node-label {
-  font-family: 'IBM Plex Mono', monospace;
   font-weight: 700;
   font-size: 16px;
   background: white;
@@ -162,7 +161,6 @@ html, body {
 
 /* Photo tooltips */
 .photo-tooltip {
-  font-family: 'IBM Plex Mono', monospace;
   font-size: 12px;
   font-weight: 400;
   padding: 0;
@@ -184,7 +182,6 @@ html, body {
 
 /* Detailed zones labels */
 .feature-label {
-  font-family: 'IBM Plex Mono', monospace;
   font-size: 14px;
   font-weight: 500;
   color: #FFA500;
@@ -239,47 +236,22 @@ html, body {
   height: 24px;
 }
 
-/* Loading Indicator
+/* Overlay Styles
 ------------------------------------------ */
-.loading-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(255, 255, 255, 0.8);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  transition: opacity 0.3s ease-out;
-}
-
-.loading-overlay.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid rgba(0, 0, 0, 0.1);
-  border-radius: 50%;
-  border-top: 4px solid #333;
-  animation: spin 1s linear infinite;
-  margin-bottom: 10px;
-}
-
-.loading-text {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 14px;
-  color: #333;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+#overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
 }
 
 /* Media Queries
@@ -334,6 +306,7 @@ html, body {
     padding: 16px 24px;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    font-family: 'Courier New', Courier, monospace !important;
     font-size: 18px;
     font-weight: 500;
     color: #333;

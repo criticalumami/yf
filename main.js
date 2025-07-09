@@ -1,6 +1,6 @@
 // Global variables
 let map;
-let layerControl;
+let layerControl, mapTitle, scaleBar, northArrow;
 const layers = {};
 
 // Initialize the application
@@ -8,6 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
     initMap();
     setupControls();
     loadData();
+
+    const overlay = document.getElementById('overlay');
+    overlay.addEventListener('click', () => {
+        overlay.style.display = 'none';
+        map.scrollWheelZoom.enable();
+    });
 });
 
 // Map style constants
@@ -84,38 +90,6 @@ function initMap() {
         scrollWheelZoom: false  // Disable scroll wheel zoom by default
     });
 
-    // Create a custom control center position
-    const centerControlDiv = document.createElement('div');
-    centerControlDiv.className = 'leaflet-control-container-center';
-    map.getContainer().appendChild(centerControlDiv);
-
-    // Add interaction message
-    const interactionMsg = document.createElement('div');
-    interactionMsg.className = 'map-interaction-msg';
-    interactionMsg.innerHTML = 'Click to enable zoom';
-    centerControlDiv.appendChild(interactionMsg);
-
-    // Add blur overlay
-    const blurOverlay = document.createElement('div');
-    blurOverlay.className = 'map-blur-overlay';
-    map.getContainer().appendChild(blurOverlay);
-
-    // Enable scroll zoom only when map receives focus through clicking
-    map.on('click', function() {
-        if (!map.scrollWheelZoom.enabled()) {
-            map.scrollWheelZoom.enable();
-            interactionMsg.style.display = 'none';
-            blurOverlay.style.display = 'none';
-        }
-    });
-    
-    // Disable scroll zoom when mouse leaves the map
-    map.on('mouseout', function() {
-        map.scrollWheelZoom.disable();
-        interactionMsg.style.display = 'flex';
-        blurOverlay.style.display = 'block';
-    });
-
     // Define basemaps
     const baseMaps = {
         "Minimalist": L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
@@ -140,7 +114,7 @@ function initMap() {
 // Set up map controls (title, scale, north arrow)
 function setupControls() {
     // Add map title
-    const mapTitle = L.control({position: 'topright'});
+    mapTitle = L.control({position: 'topright'});
     mapTitle.onAdd = function() {
         const div = L.DomUtil.create('div', 'map-title');
         div.innerHTML = 'Yerevan Flyover - SIMA';
@@ -149,7 +123,7 @@ function setupControls() {
     mapTitle.addTo(map);
 
     // Add scale bar
-    L.control.scale({
+    scaleBar = L.control.scale({
         maxWidth: 200,
         metric: true,
         imperial: false,
@@ -157,7 +131,7 @@ function setupControls() {
     }).addTo(map);
 
     // Add north arrow
-    const northArrow = L.control({ position: 'bottomright' });
+    northArrow = L.control({ position: 'bottomright' });
     northArrow.onAdd = function() {
         const div = L.DomUtil.create('div', 'north-arrow');
         div.innerHTML = '<img src="icons/north-arrow.svg" alt="North Arrow">';
@@ -168,8 +142,6 @@ function setupControls() {
 
 // Load all data layers
 function loadData() {
-    showLoading();
-    
     loadBoundary()
         .then(() => {
             // Load other layers in parallel after boundary is loaded
@@ -179,8 +151,6 @@ function loadData() {
                 loadLayer('parks', 'data/parks.geojson', STYLES.parks, true),
                 loadLayer('simaProjects', 'data/sima.geojson', STYLES.simaProjects, true),
                 loadLayer('surveyLines', 'data/surv.geojson', STYLES.surveyLines, true),
-                loadNodesLayer(),
-                loadPhotosLayer(),
                 loadSportsLayer(),
                 loadDetailedZonesLayer()
             ]);
@@ -188,10 +158,8 @@ function loadData() {
         .catch(error => {
             console.error('Error loading map data:', error);
         })
-        .finally(() => {
-            hideLoading();
-        });
 }
+
 
 // Load YF boundary and create mask
 function loadBoundary() {
@@ -323,7 +291,6 @@ function loadNodesLayer() {
                 }
             });
             
-            nodesLayer.addTo(map);
             layers.nodes = nodesLayer;
             layerControl.addOverlay(nodesLayer, 'Nodes');
             
@@ -366,7 +333,6 @@ function loadPhotosLayer() {
                 }
             });
             
-            photosLayer.addTo(map);
             layers.photos = photosLayer;
             layerControl.addOverlay(photosLayer, 'Photos');
             
@@ -449,7 +415,7 @@ function loadDetailedZonesLayer() {
                     
                     // Add a label if the feature has a name
                     if (feature.properties?.name) {
-                        addZoneLabel(feature, layer);
+                        layer.bindTooltip(addZoneLabel(feature, layer), {permanent: true});
                     }
                 }
             });
@@ -490,16 +456,7 @@ function addZoneLabel(feature, layer) {
     .setLatLng(outsidePos)
     .setContent(`<span class="feature-label">${feature.properties.name}</span>`);
 
-    tooltip.addTo(map);
-}
-
-// Show/hide loading indicator
-function showLoading() {
-    document.getElementById('loading').classList.remove('hidden');
-}
-
-function hideLoading() {
-    document.getElementById('loading').classList.add('hidden');
+    return tooltip;
 }
 
 // Helper function to convert string to title case
