@@ -77,7 +77,7 @@ html, body, .leaflet-container {
   border: 2px solid #333 !important;
   border-top: none !important;
   color: #333 !important;
-  background: rgba(255, 255, 255, 0.8) !important;
+  background: rgba(255, 255, 255, 0) !important;
 }
 
 /* Layer Specific Styles
@@ -246,6 +246,7 @@ html, body, .leaflet-container {
     z-index: 9999;
     color: white;
     font-size: 24px;
+    font-weight: bold;
     cursor: pointer;
 }
 
