@@ -117,7 +117,7 @@ function setupControls() {
     mapTitle = L.control({position: 'topright'});
     mapTitle.onAdd = function() {
         const div = L.DomUtil.create('div', 'map-title');
-        div.innerHTML = 'Yerevan Flyover - SIMA';
+        div.innerHTML = 'Yerevan Flyover - S01';
         return div;
     };
     mapTitle.addTo(map);
